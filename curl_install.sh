@@ -67,7 +67,7 @@ function install_zShaderCacheKiller () {
   chmod 555 "$moverScriptInstallPath"
 
   add_killer="$(steamos-add-to-steam "$killerScriptInstallPath")"
-  sleep 2;
+  sleep 5;
   add_mover="$(steamos-add-to-steam "$moverScriptInstallPath")"
 
 }
