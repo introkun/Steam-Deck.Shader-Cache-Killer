@@ -37,10 +37,10 @@ function install_zShaderCacheKiller () {
     exit 0;
   fi
 
-  killerScriptName="zShaderCacheKillerRewamped.sh"
-  moverScriptName="zShaderCacheMoverRewamped.sh"
-  killerScriptInstallPath="$script_install_dir/$killerScriptName"
-  moverScriptInstallPath="$script_install_dir/$moverScriptName"
+  killerScriptName="zShaderCacheKiller"
+  moverScriptName="zShaderCacheMover"
+  killerScriptInstallPath="$script_install_dir/${killerScriptName}Rewamped.sh"
+  moverScriptInstallPath="$script_install_dir/${moverScriptName}Rewamped.sh"
 
   echo "Making tmp folder $tmp_dir"
   mkdir -p "$tmp_dir"
@@ -49,14 +49,14 @@ function install_zShaderCacheKiller () {
   mkdir -p "$script_install_dir"
 
   echo "Downloading Required Files"
-  curl -o "$tmp_dir/$killerScriptName" "$repo_url/$killerScriptName"
-  curl -o "$tmp_dir/$moverScriptName" "$repo_url/$moverScriptName"
+  curl -o "$tmp_dir/$killerScriptName.sh" "$repo_url/$killerScriptName.sh"
+  curl -o "$tmp_dir/$moverScriptName.sh" "$repo_url/$moverScriptName.sh"
 
-  echo "Copying $tmp_dir/$killerScriptName to $killerScriptInstallPath"
-  cp "$tmp_dir/$killerScriptName" "$killerScriptInstallPath"
+  echo "Copying $tmp_dir/$killerScriptName.sh to $killerScriptInstallPath"
+  cp "$tmp_dir/$killerScriptName.sh" "$killerScriptInstallPath"
 
-  echo "Copying $tmp_dir/$moverScriptName to $moverScriptInstallPath"
-  cp "$tmp_dir/$moverScriptName" "$moverScriptInstallPath"
+  echo "Copying $tmp_dir/$moverScriptName.sh to $moverScriptInstallPath"
+  cp "$tmp_dir/$moverScriptName.sh" "$moverScriptInstallPath"
 
   echo "Adding Execute and Removing Write Permissions"
   chmod 555 "$killerScriptInstallPath"
