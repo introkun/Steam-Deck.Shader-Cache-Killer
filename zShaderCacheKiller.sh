@@ -1,7 +1,7 @@
 #!/bin/bash
-#Steam Deck Shader Cache Killer by scawp
-#License: DBAD: https://github.com/scawp/Steam-Deck.Shader-Cache-Killer/blob/main/LICENSE.md
-#Source: https://github.com/scawp/Steam-Deck.Shader-Cache-Killer
+#Steam Deck Shader Cache Killer by scawp and rewamped by introkun
+#License: DBAD: https://github.com/intokun/Steam-Deck.Shader-Cache-Killer/blob/main/LICENSE.md
+#Source: https://github.com/introkun/Steam-Deck-Shader.Cache-Killer (original source is here https://github.com/scawp/Steam-Deck-Shader.Cache-Killer)
 # Use at own Risk!
 
 live=1
@@ -39,8 +39,8 @@ log_debug "Dry-Run: $live"
 
 #script_dir="$(dirname $(realpath "$0"))"
 #conf_dir="$(dirname $(realpath "$0"))/config"
-conf_dir="/tmp/scawp.SDCacheKiller"
-tmp_dir="/tmp/scawp.SDCacheKiller"
+conf_dir="/tmp/introkun.SDCacheKiller"
+tmp_dir="/tmp/introkun.SDCacheKiller"
 steamapps_dir="/home/deck/.local/share/Steam/steamapps"
 
 log_debug "Creating temporary directories..."

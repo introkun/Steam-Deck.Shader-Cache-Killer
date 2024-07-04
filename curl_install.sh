@@ -1,16 +1,16 @@
 #!/bin/bash
-#Steam Deck Shader Cache Killer by scawp
-#License: DBAD: https://github.com/scawp/Steam-Deck.Shader-Cache-Killer/blob/main/LICENSE.md
-#Source: https://github.com/scawp/Steam-Deck-Shader.Cache-Killer
+#Steam Deck Shader Cache Killer by scawp and rewamped by introkun
+#License: DBAD: https://github.com/intokun/Steam-Deck.Shader-Cache-Killer/blob/main/LICENSE.md
+#Source: https://github.com/introkun/Steam-Deck-Shader.Cache-Killer (original source is here https://github.com/scawp/Steam-Deck-Shader.Cache-Killer)
 
-#stop running script if anything returns an error (non-zero exit )
+#stop running script if anything returns an error (non-zero exit)
 set -e
 
-repo_url="https://raw.githubusercontent.com/scawp/Steam-Deck.Shader-Cache-Killer/main"
+repo_url="https://raw.githubusercontent.com/introkun/Steam-Deck.Shader-Cache-Killer/main"
 
-tmp_dir="/tmp/scawp.SDSCK.install"
+tmp_dir="/tmp/introkun.SDSCK.install"
 
-script_install_dir="/home/deck/.local/share/scawp/SDSCK"
+script_install_dir="/home/deck/.local/share/introkun/SDSCK"
 
 device_name="$(uname --nodename)"
 user="$(id -u deck)"
@@ -37,6 +37,11 @@ function install_zShaderCacheKiller () {
     exit 0;
   fi
 
+  killerScriptName="zShaderCacheKillerRewamped.sh"
+  moverScriptName="zShaderCacheMoverRewamped.sh"
+  killerScriptInstallPath="$script_install_dir/$killerScriptName"
+  moverScriptInstallPath="$script_install_dir/$moverScriptName"
+
   echo "Making tmp folder $tmp_dir"
   mkdir -p "$tmp_dir"
 
@@ -44,22 +49,22 @@ function install_zShaderCacheKiller () {
   mkdir -p "$script_install_dir"
 
   echo "Downloading Required Files"
-  curl -o "$tmp_dir/zShaderCacheKiller.sh" "$repo_url/zShaderCacheKiller.sh"
-  curl -o "$tmp_dir/zShaderCacheMover.sh" "$repo_url/zShaderCacheMover.sh"
+  curl -o "$tmp_dir/$killerScriptName" "$repo_url/$killerScriptName"
+  curl -o "$tmp_dir/$moverScriptName" "$repo_url/$moverScriptName"
 
-  echo "Copying $tmp_dir/zShaderCacheKiller.sh to $script_install_dir/zShaderCacheKiller.sh"
-  sudo cp "$tmp_dir/zShaderCacheKiller.sh" "$script_install_dir/zShaderCacheKiller.sh"
+  echo "Copying $tmp_dir/$killerScriptName to $killerScriptInstallPath"
+  cp "$tmp_dir/$killerScriptName" "$killerScriptInstallPath"
 
-  echo "Copying $tmp_dir/zShaderCacheMover.sh to $script_install_dir/zShaderCacheMover.sh"
-  sudo cp "$tmp_dir/zShaderCacheMover.sh" "$script_install_dir/zShaderCacheMover.sh"
+  echo "Copying $tmp_dir/$moverScriptName to $moverScriptInstallPath"
+  cp "$tmp_dir/$moverScriptName" "$moverScriptInstallPath"
 
   echo "Adding Execute and Removing Write Permissions"
-  sudo chmod 555 "$script_install_dir/zShaderCacheKiller.sh"
-  sudo chmod 555 "$script_install_dir/zShaderCacheMover.sh"
+  chmod 555 "$killerScriptInstallPath"
+  chmod 555 "$moverScriptInstallPath"
 
-  add_killer="$(steamos-add-to-steam "$script_install_dir/zShaderCacheKiller.sh")"
+  add_killer="$(steamos-add-to-steam "$killerScriptInstallPath")"
   sleep 2;
-  add_mover="$(steamos-add-to-steam "$script_install_dir/zShaderCacheMover.sh")"
+  add_mover="$(steamos-add-to-steam "$moverScriptInstallPath")"
 
 }
 
