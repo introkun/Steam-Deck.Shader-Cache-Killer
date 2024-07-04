@@ -38,7 +38,7 @@ https://www.youtube.com/watch?v=SLGvTDGDUcY
 
 ## Simple Install
 
-[Download this link](https://raw.githubusercontent.com/introkun/Steam-Deck.Shader-Cache-Killer/main/InstallZShaderCacheUtilities.desktop) to your desktop (right click and save file) on your Steam Deck, remove the .download from the end of the file name, then double-click it.
+[Download this link](https://raw.githubusercontent.com/introkun/Steam-Deck.Shader-Cache-Killer/main/InstallZShaderCacheUtilities.desktop) to your **Desktop** (right click and save file) on your Steam Deck, remove the .download from the end of the file name, then double-click it.
 
 This will install the scripts and create Steam entries.
 
@@ -55,14 +55,19 @@ In Konsole type `curl -sSL https://raw.githubusercontent.com/introkun/Steam-Deck
 
 The install script will offer to add `zShaderCacheKiller.sh` & `zShaderCacheMover.sh` to your Steam Libaray, which can be ran from `GameMode`. 
 
+## Reinstall/Update
+
+- Open Desktop Mode
+- Launch Steam app
+- Remove zShaderCacheKillerRewamped.sh and zShaderCacheMoverRewamped.sh
+- If you used **Simple Install** method then you can just launch "InstallZShaderCacheUtilities" desktop icon. It will download new scripts and install newer versions into Steam.
 
 ## Uninstall
 
-To uninstall simply delete the install folder:
-
+- To uninstall simply delete the install folder:
 `sudo rm -r /home/deck/.local/share/introkun/SDSCK`
 
-Also remove the `non-steam game` links in `Steam`
+- Also remove the `non-steam game` links in `Steam`
 
 
 # Found a Bug?

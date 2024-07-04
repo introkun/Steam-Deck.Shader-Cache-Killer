@@ -70,10 +70,12 @@ function install_zShaderCacheKiller () {
   chmod 555 "$killerScriptInstallPath"
   chmod 555 "$moverScriptInstallPath"
 
+  echo "Adding to Steam Library. Ignoring exit codes as we want to continue even if it fails."
+  set +e
+  zenity --info --width=400 --text="Adding cache killer script to Steam" --timeout=1
   add_killer="$(steamos-add-to-steam "$killerScriptInstallPath")"
-  sleep 5;
+  zenity --info --width=400 --text="Adding cache mover script to Steam (5 sec delay)" --timeout=5
   add_mover="$(steamos-add-to-steam "$moverScriptInstallPath")"
-
 }
 
 install_zShaderCacheKiller
