@@ -6,7 +6,7 @@
 #stop running script if anything returns an error (non-zero exit)
 set -e
 
-repo_url="https://raw.githubusercontent.com/introkun/Steam-Deck.Shader-Cache-Killer-Rewamped/main"
+repo_url="https://raw.githubusercontent.com/introkun/Steam-Deck.Shader-Cache-Killer/main"
 
 tmp_dir="/tmp/introkun.SDSCK.install"
 
@@ -26,6 +26,24 @@ if [ "$device_name" !='' "steamdeck" ] || [ "$user" != "1000" ]; then
     exit 1;
   fi
 fi
+
+function create_desktop_icon () {
+  app_name="$1"
+  app_description="$2"
+  script_name="$3"
+  icon_path="$HOME"/Desktop/"$app_name".desktop
+  rm -rf "$icon_path" 2>/dev/null
+
+  echo "#!/usr/bin/env xdg-open
+  [Desktop Entry]
+  Name=$app_description
+  Exec=curl $repo_url/$script_name | bash -s --
+  Icon=delete
+  Terminal=false
+  Type=Application
+  StartupNotify=false" > "$icon_path"
+  chmod +x "$icon_path"
+}
 
 function install_zShaderCacheKiller () {
   zenity --question --width=400 \
@@ -70,7 +88,12 @@ function install_zShaderCacheKiller () {
   chmod 555 "$killerScriptInstallPath"
   chmod 555 "$moverScriptInstallPath"
 
-  echo "Adding to Steam Library. Ignoring exit codes as we want to continue even if it fails."
+  echo "Creating Desktop Icons..."
+  create_desktop_icon "UninstallZShaderCacheUtilities" "Uninstall zShaderCacheUtilities" "uninstall.sh"
+
+  update-desktop-database ~/.local/share/applications
+
+  echo "Adding to Steam Library..."
   set +e
   zenity --info --width=400 --text="Adding cache killer script to Steam" --timeout=1
   add_killer="$(steamos-add-to-steam "$killerScriptInstallPath")"
