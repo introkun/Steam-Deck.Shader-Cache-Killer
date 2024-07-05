@@ -34,6 +34,10 @@ if [ "$device_name" !='' "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
+function info () {
+  zenity --info --width=400 --text="$1"
+}
+
 function create_remote_desktop_icon () {
   app_name="$1"
   app_description="$2"
@@ -63,7 +67,7 @@ function create_desktop_icon () {
   [Desktop Entry]
   Name=$app_description
   Exec=bash $script_install_dir/$script_name
-  Icon=delete
+  Icon=steamdeck-gaming-return
   Terminal=false
   Type=Application
   StartupNotify=false" > "$icon_path"
@@ -71,14 +75,7 @@ function create_desktop_icon () {
 }
 
 function install_zShaderCacheKiller () {
-  zenity --question --width=400 \
-    --text="Read $repo_url/README.md before proceeding. \
-    \nWould you like to add Shader Cache Killer to your Steam Library?"
-  if [ "$?" != 0 ]; then
-    #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
-    echo "bye then! xxx"
-    exit 0;
-  fi
+  info "This script will install zShaderCacheUtilities. Please read the $repo_url/README.md before proceeding."
 
   echo "Making tmp folder $tmp_dir"
   mkdir -p "$tmp_dir"
@@ -115,6 +112,14 @@ function install_zShaderCacheKiller () {
 
   update-desktop-database ~/.local/share/applications
 
+  zenity --question --width=400 \
+    --text="Read $repo_url/README.md before proceeding. \
+    \nWould you like to add Shader Cache Killer to your Steam Library?"
+  if [ "$?" != 0 ]; then
+    #NOTE: This code will never be reached due to "set -e", the system will already exit for us but just incase keep this
+    echo "bye then! xxx"
+    exit 0;
+  fi
   echo "Adding to Steam Library..."
   set +e
   zenity --info --width=400 --text="Adding cache killer script to Steam" --timeout=1

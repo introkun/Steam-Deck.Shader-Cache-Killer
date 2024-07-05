@@ -167,6 +167,8 @@ function gui () {
 }
 
 function main () {
+  info_with_timeout "Welcome to Steam Deck Shader Cache Killer by scawp and rewamped by introkun"
+
   get_list $1 $2
   gui $1 $2
 
