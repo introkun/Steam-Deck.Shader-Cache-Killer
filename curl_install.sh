@@ -15,6 +15,13 @@ script_install_dir="/home/deck/.local/share/introkun/SDSCK"
 device_name="$(uname --nodename)"
 user="$(id -u deck)"
 
+killerScriptName="zShaderCacheKiller"
+moverScriptName="zShaderCacheMover"
+killerScriptInstallName="${killerScriptName}Rewamped.sh"
+moverScriptInstallName="${moverScriptName}Rewamped.sh"
+killerScriptInstallPath="$script_install_dir/$killerScriptInstallName"
+moverScriptInstallPath="$script_install_dir/$moverScriptInstallName"
+
 if [ "$device_name" !='' "steamdeck" ] || [ "$user" != "1000" ]; then
   zenity --question --width=400 \
   --text="This code has been written specifically for the Steam Deck with user Deck \
@@ -27,7 +34,7 @@ if [ "$device_name" !='' "steamdeck" ] || [ "$user" != "1000" ]; then
   fi
 fi
 
-function create_desktop_icon () {
+function create_remote_desktop_icon () {
   app_name="$1"
   app_description="$2"
   script_name="$3"
@@ -45,6 +52,24 @@ function create_desktop_icon () {
   chmod +x "$icon_path"
 }
 
+function create_desktop_icon () {
+  app_name="$1"
+  app_description="$2"
+  script_name="$3"
+  icon_path="$HOME"/Desktop/"$app_name".desktop
+  rm -rf "$icon_path" 2>/dev/null
+
+  echo "#!/usr/bin/env xdg-open
+  [Desktop Entry]
+  Name=$app_description
+  Exec=bash $script_install_dir/$script_name
+  Icon=delete
+  Terminal=false
+  Type=Application
+  StartupNotify=false" > "$icon_path"
+  chmod +x "$icon_path"
+}
+
 function install_zShaderCacheKiller () {
   zenity --question --width=400 \
     --text="Read $repo_url/README.md before proceeding. \
@@ -54,11 +79,6 @@ function install_zShaderCacheKiller () {
     echo "bye then! xxx"
     exit 0;
   fi
-
-  killerScriptName="zShaderCacheKiller"
-  moverScriptName="zShaderCacheMover"
-  killerScriptInstallPath="$script_install_dir/${killerScriptName}Rewamped.sh"
-  moverScriptInstallPath="$script_install_dir/${moverScriptName}Rewamped.sh"
 
   echo "Making tmp folder $tmp_dir"
   mkdir -p "$tmp_dir"
@@ -89,7 +109,9 @@ function install_zShaderCacheKiller () {
   chmod 555 "$moverScriptInstallPath"
 
   echo "Creating Desktop Icons..."
-  create_desktop_icon "UninstallZShaderCacheUtilities" "Uninstall zShaderCacheUtilities" "uninstall.sh"
+  create_remote_desktop_icon "UninstallZShaderCacheUtilities" "Uninstall zShaderCacheUtilities" "uninstall.sh"
+  create_desktop_icon "zShaderCacheKiller" "zShaderCacheKiller" "$killerScriptInstallName"
+  create_desktop_icon "zShaderCacheMover" "zShaderCacheMover" "$moverScriptInstallName"
 
   update-desktop-database ~/.local/share/applications
 

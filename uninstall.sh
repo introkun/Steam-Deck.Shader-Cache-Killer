@@ -14,6 +14,8 @@ if zenity --question --title="Uninstall" --text="This script will uninstall zSha
 
   # Remove Desktop icons
   rm -rf "$HOME"/Desktop/UninstallZShaderCacheUtilities.desktop 2>/dev/null
+  rm -rf "$HOME"/Desktop/zShaderCacheKiller.desktop 2>/dev/null
+  rm -rf "$HOME"/Desktop/zShaderCacheMover.desktop 2>/dev/null
 
   update-desktop-database ~/.local/share/applications
 fi
