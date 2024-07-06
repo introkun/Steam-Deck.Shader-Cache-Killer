@@ -9,9 +9,29 @@ if [ "$1" = "dry-run" ]; then
   live=0
 fi
 
+#script_dir="$(dirname $(realpath "$0"))"
+#conf_dir="$(dirname $(realpath "$0"))/config"
+conf_dir="/tmp/introkun.SDCacheKiller"
+tmp_dir="/tmp/introkun.SDCacheKiller"
+steamapps_dir="/home/deck/.local/share/Steam/steamapps"
+script_name=$(basename "$0" .sh)
+log_date=$(date '+%Y-%m-%d')
+logs_dir="$tmp_dir/logs"
+log_file="$logs_dir/${script_name}_log_$log_date.txt"
+
 #live=0 #uncomment for debugging/testing
 
+function log_message () {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$log_file"
+}
+
+function log () {
+  echo "$1"
+  log_message "$1"
+}
+
 function log_debug () {
+  log_message "$1"
   if [ $live = 0 ]; then
     echo "$1"
   fi
@@ -35,18 +55,15 @@ function error () {
   log_debug "Error: $1"
 }
 
-log_debug "Dry-Run: $live"
+log_debug "=== Starting $script_name script... ==="
 
-#script_dir="$(dirname $(realpath "$0"))"
-#conf_dir="$(dirname $(realpath "$0"))/config"
-conf_dir="/tmp/introkun.SDCacheKiller"
-tmp_dir="/tmp/introkun.SDCacheKiller"
-steamapps_dir="/home/deck/.local/share/Steam/steamapps"
+log_debug "Dry-Run: $live"
 
 log_debug "Creating temporary directories..."
 mkdir -p "$tmp_dir"
 mkdir -p "$conf_dir"
-log_debug "Temporary directory created: $tmp_dir and $conf_dir"
+mkdir -p "$logs_dir"
+log_debug "Temporary directory created: $tmp_dir, $conf_dir and $logs_dir"
 
 log_debug "Downloading list of all Steam IDs if we haven't already"
 #TODO: Download new list every week?
@@ -79,14 +96,13 @@ function get_list () {
       readlink_output=$(readlink "$path")
       if [ ! -e $path ]; then
         log_debug "Broken symlink $path pointing to $readlink_output"
+        echo -e "?\t$path" >> "$tmp_dir/tmp_list.txt"
       else
         log_debug "Symlink $path pointing to $readlink_output"
         line_count=$(echo "$readlink_output" | wc -l)
         if [ ! "$line_count" -eq 1 ]; then
           warning "Symlink $path points to multiple locations: $readlink_output. Ignoring."
         else
-          # TODO: New non-tested behavior
-          #echo -e "?\t$readlink_output" >> "$tmp_dir/tmp_list.txt"
           du -m --max-depth 0  "$(realpath $path)" >> "$tmp_dir/tmp_list.txt"
         fi
       fi
@@ -188,8 +204,7 @@ function main () {
   i=0
 
   if [ "${#selected_cache_array[@]}" = 0 ]; then
-    zenity --error --width=400 \
-    --text="No $1 Selected, Quitting!"
+    error "No $1 Selected, Quitting!"
     exit 1;
   fi
 
@@ -202,10 +217,11 @@ function main () {
     fi
   fi
 
+  log "Deleting $1..."
   (
     for selected_cache in "${selected_cache_array[@]}"; do
       ((i++))
-      echo "# Killing $selected_cache";
+      log "# Killing $selected_cache";
       ((percentage=($i*100/${#selected_cache_array[@]})))
 
       if [ $live = 1 ]; then
@@ -217,20 +233,20 @@ function main () {
       sleep 1
     done
     if [ $live = 1 ]; then
-      echo "# $1 Killed!"
+      log "# $1 Killed!"
     else
-      echo "# $1 Dry-Run nothing deleted!"
+      log "# $1 Dry-Run nothing deleted!"
     fi
   ) | zenity --progress --width=400 \
     --title="Deleting $1 Dir" \
     --percentage=0
 
   if [ "$?" = 1 ] ; then
-    zenity --error --width=400 \
-      --text="User Cancelled, some Cache not cleared!"
+    error "User Cancelled, some Cache not cleared!"
     exit 1;
   fi
 
+  log_debug "=== Finished $script_name script ==="
   exit 0;
 }
 
