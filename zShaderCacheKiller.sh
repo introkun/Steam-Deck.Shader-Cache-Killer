@@ -13,11 +13,13 @@ fi
 #conf_dir="$(dirname $(realpath "$0"))/config"
 conf_dir="/tmp/introkun.SDCacheKiller"
 tmp_dir="/tmp/introkun.SDCacheKiller"
+script_install_dir="/home/deck/.local/share/introkun/SDSCK"
 steamapps_dir="/home/deck/.local/share/Steam/steamapps"
 script_name=$(basename "$0" .sh)
 log_date=$(date '+%Y-%m-%d')
 logs_dir="$tmp_dir/logs"
 log_file="$logs_dir/${script_name}_log_$log_date.txt"
+version=$(echo "$script_install_dir/version.txt" | sed -e 's/\n//' -e 's/\r//' )
 
 #live=0 #uncomment for debugging/testing
 
@@ -55,7 +57,7 @@ function error () {
   log_debug "Error: $1"
 }
 
-log_debug "=== Starting $script_name script... ==="
+log_debug "=== Starting $script_name script (version $version)... ==="
 
 log_debug "Dry-Run: $live"
 
@@ -173,7 +175,7 @@ function get_list () {
 
 function gui () {
   IFS=$'[\t|\n]';
-  selected_caches=$(zenity --list --title="Select $1 for Deletion" \
+  selected_caches=$(zenity --list --title="Select $1 for Deletion (version $version)" \
     --width=1200 --height=720 --print-column=6 --separator="\t" \
     --ok-label "Delete selected $1!" --extra-button "$2" \
     --checklist --column="check" --column="Size (MB)" --column="App Id" --column="Name" --column="Info" --column="Real Path" \
@@ -238,7 +240,7 @@ function main () {
       log "# $1 Dry-Run nothing deleted!"
     fi
   ) | zenity --progress --width=400 \
-    --title="Deleting $1 Dir" \
+    --title="Deleting $1 Dir (version $version)" \
     --percentage=0
 
   if [ "$?" = 1 ] ; then

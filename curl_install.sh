@@ -86,6 +86,7 @@ function install_zShaderCacheKiller () {
   echo "Downloading Required Files"
   curl -o "$tmp_dir/$killerScriptName.sh" "$repo_url/$killerScriptName.sh"
   curl -o "$tmp_dir/$moverScriptName.sh" "$repo_url/$moverScriptName.sh"
+  curl -o "$tmp_dir/version.txt" "$repo_url/version.txt"
 
   echo "Adding Write Permissions if needed"
   if [ -e "$killerScriptInstallPath" ]; then
@@ -100,6 +101,9 @@ function install_zShaderCacheKiller () {
 
   echo "Copying $tmp_dir/$moverScriptName.sh to $moverScriptInstallPath"
   cp "$tmp_dir/$moverScriptName.sh" "$moverScriptInstallPath"
+
+  echo "Copying $tmp_dir/version.txt to $script_install_dir"
+  cp "$tmp_dir/version.txt" "$script_install_dir/version.txt"
 
   echo "Adding Execute and Removing Write Permissions"
   chmod 555 "$killerScriptInstallPath"
