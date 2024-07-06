@@ -19,7 +19,7 @@ script_name=$(basename "$0" .sh)
 log_date=$(date '+%Y-%m-%d')
 logs_dir="$tmp_dir/logs"
 log_file="$logs_dir/${script_name}_log_$log_date.txt"
-version=$(echo "$script_install_dir/version.txt" | sed -e 's/\n//' -e 's/\r//' )
+version=$(cat "$script_install_dir/version.txt" | sed -e 's/\n//' -e 's/\r//' )
 
 #live=0 #uncomment for debugging/testing
 
