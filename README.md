@@ -1,3 +1,8 @@
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/introkun/Steam-Deck.Shader-Cache-Killer-Rewamped/total) ![GitHub commit activity](https://img.shields.io/github/commit-activity/m/introkun/Steam-Deck.Shader-Cache-Killer-Rewamped)
+ ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/introkun/Steam-Deck.Shader-Cache-Killer-Rewamped)
+
+
+
 # Steam Deck: Shader Cache Killer Rewamped
 
 Rewamped script to Purge The Steam Decks Shader Cache & Compat Data
