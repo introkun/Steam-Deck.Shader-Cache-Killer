@@ -13,6 +13,8 @@ fi
 #conf_dir="$(dirname $(realpath "$0"))/config"
 conf_dir="/tmp/introkun.SDCacheKiller"
 tmp_dir="/tmp/introkun.SDCacheKiller"
+timestamp_file="$conf_dir/last_download.txt"
+json_file="$conf_dir/fulllist.json"
 script_install_dir="/home/deck/.local/share/introkun/SDSCK"
 steamapps_dir="/home/deck/.local/share/Steam/steamapps"
 script_name=$(basename "$0" .sh)
@@ -67,12 +69,20 @@ mkdir -p "$conf_dir"
 mkdir -p "$logs_dir"
 log_debug "Temporary directory created: $tmp_dir, $conf_dir and $logs_dir"
 
-log_debug "Downloading list of all Steam IDs if we haven't already"
-#TODO: Download new list every week?
-if [ ! -f "$conf_dir/fulllist.json" ] || [ ! -s "$conf_dir/fulllist.json" ];then 
-  #TODO: Test when offline or errorcode
-  curl "https://api.steampowered.com/ISteamApps/GetAppList/v2/" > "$conf_dir/fulllist.json"
-  log_debug "Downloaded list of all Steam IDs!"
+# Check if the JSON file exists and is not empty, or if 24 hours have passed since the last download
+if [ ! -f "$json_file" ] || [ ! -s "$json_file" ] || [ ! -f "$timestamp_file" ] || [ $(($(date +%s) - $(date +%s -r "$timestamp_file"))) -ge 86400 ]; then
+  log_debug "Downloading list of all Steam IDs..."
+  
+  if curl -f -o "$json_file" "https://api.steampowered.com/ISteamApps/GetAppList/v2/"; then
+    log_debug "Downloaded list of all Steam IDs!"
+    # Update the timestamp file
+    date +%s > "$timestamp_file"
+  else
+    log_debug "Failed to download the list of all Steam IDs"
+    exit 1;
+  fi
+else
+  log_debug "No need to download the list of all Steam IDs, it was downloaded within the last 24 hours"
 fi
 
 log_debug "Checking for Steam Library locations..."
