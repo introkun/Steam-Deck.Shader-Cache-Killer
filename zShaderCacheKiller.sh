@@ -17,6 +17,7 @@ timestamp_file="$conf_dir/last_download.txt"
 json_file="$conf_dir/fulllist.json"
 script_install_dir="/home/deck/.local/share/introkun/SDSCK"
 steamapps_dir="/home/deck/.local/share/Steam/steamapps"
+userdata_dir="/home/deck/.steam/root/userdata" # used to read steam shortcuts
 script_name=$(basename "$0" .sh)
 log_date=$(date '+%Y-%m-%d')
 logs_dir="$tmp_dir/logs"
@@ -130,6 +131,37 @@ function get_list () {
 
   true > "$tmp_dir/tmp_names.txt"
 
+  # Read steam shortcuts to find non steam app names
+  declare -A shortcuts
+  if [ -d "$userdata_dir" ]; then
+    log_debug "Reading steam shortcuts"
+
+    # Find and read "/config/shortcuts.vdf" inside user data
+    while read -r SHORTCUTS_FILE; do
+        USER_ID=$(echo "$SHORTCUTS_FILE" | awk -F'/' '{for(i=1;i<=NF;i++) if($i=="userdata") print $(i+1)}')
+        log_debug "Found shortcuts for user ID: $USER_ID"
+
+        HEX=$(xxd -p "$SHORTCUTS_FILE" | tr -d '\n[:space:]' | tr 'A-F' 'a-f')
+
+        # Split HEX on "Exe" (145786500)
+        while read -r CHUNK; do
+            if [[ "$CHUNK" =~ 2617070696400[0-9a-f]{8} && "$CHUNK" =~ 16170706e616d6500[0-9a-f]+ ]]; then
+                MATCH="$CHUNK"
+
+                APPID_HEX=$(echo "$MATCH" | sed -E 's/^.*2617070696400([0-9a-f]{8}).*/\1/')
+                APPID=$((0x$(echo "$APPID_HEX" | sed -E 's/(..)(..)(..)(..)/\4\3\2\1/')))
+
+                NAME_HEX=$(echo "$MATCH" | sed -E 's/^.*16170706e616d6500//')
+                NAME_HEX_STRING=$(echo "$NAME_HEX" | sed 's/00.*//')
+                NAME=$(echo "$NAME_HEX_STRING" | xxd -r -p 2>/dev/null)
+
+                log_debug "- $APPID | $NAME"
+                shortcuts["$APPID"]="$NAME"
+            fi
+        done < <(echo "$HEX" | awk -v RS='145786500' '{print}')
+    done < <(find "$userdata_dir" -type f -path "*/config/shortcuts.vdf" 2>/dev/null)
+  fi
+
   while read -r manifest; do
     found=0
     log_debug "Checking $manifest"
@@ -143,6 +175,15 @@ function get_list () {
         break;
       fi
     done
+
+    # Check if app is in shortcuts
+    if [ $found = 0 ] && [[ -v shortcuts[$app_id] ]]; then
+        app_name="${shortcuts[$app_id]}"
+        app_name=$(echo "$app_name" | tr -cd '[:print:]')
+        echo -e "$app_name\tNon-Steam (shortcut)" >> "$tmp_dir/tmp_names.txt"
+        found=1
+    fi
+
     #TODO: This is slow, cache the results?
     if [ $found = 0 ] && [ -f "$conf_dir/fulllist.json" ] && [ -s "$conf_dir/fulllist.json" ] && [ "$app_id" -lt 100000000 ];then
       app_name="$(cat "$conf_dir/fulllist.json" | jq -r ".applist.apps[] | select(.appid == $app_id) | .name"  | head -n1)"
